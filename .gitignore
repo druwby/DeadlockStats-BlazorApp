@@ -1,0 +1,13 @@
+# =========================
+# C# / .NET / Blazor
+# =========================
+[Bb]in/
+[Oo]bj/
+*.user
+*.slnx.user
+
+# =========================
+# Environment & Secrets
+# =========================
+appsettings.Development.json
+.DS_Store

@@ -1,0 +1,38 @@
+﻿@page "/counter"
+@rendermode InteractiveServer
+
+<PageTitle>Counter</PageTitle>
+
+<h1>Counter</h1>
+
+<p role="status">Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+<h1>String Builder</h1>
+
+<p role="status">Current string: @fullstring</p>
+
+<textarea class="form-control" @bind="teststring"></textarea>
+
+<button class="btn btn-primary" @onclick="() => AddToString(teststring)"> Add Text</button>
+
+@code {
+    private int currentCount = 0;
+    private string teststring = "";
+    private string fullstring = "";
+
+    [Parameter]
+    public int IncrementAmount { get; set; } = 1;
+
+    private void AddToString(string str)
+    {
+        fullstring += str;
+        teststring = "";
+    }
+
+    private void IncrementCount()
+    {
+        currentCount += IncrementAmount;
+    }
+}

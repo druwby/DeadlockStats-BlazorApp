@@ -1,0 +1,49 @@
+﻿@page "/todo"
+@rendermode InteractiveServer
+
+<h1>Todo @todoitems.Count(todo => !todo.IsDone)</h1>
+
+<h2>Add New Item</h2>
+
+<div class="mb-3">
+    <label for="title" class="form-label">Title</label>
+    <input type="text" class="form-control" id="title" @bind="newTitle" />
+</div>
+<div class="mb-3">
+    <label for="priority" class="form-label">Priority</label>
+    <input type="number" class="form-control" id="priority" @bind="newPriority" />
+</div>
+<button class="btn btn-primary" @onclick="AddTodo">Add Item</button>
+
+
+<ul>
+
+    @foreach (var todo in todoitems)
+    {
+        <li @key="todo.Id">
+            <input type="checkbox" @bind="todo.IsDone" />
+            @todo.Title (Priority: @todo.Priority)
+        </li>
+    }
+</ul>
+
+
+@code {
+    private List<TodoItem> todoitems = new List<TodoItem>();
+    string newTitle = "";
+    int newPriority = 1;
+
+    private void AddTodo()
+    {
+        if (string.IsNullOrWhiteSpace(newTitle))
+        {
+            return;
+        }
+
+        var newitem = new TodoItem { Title = newTitle, Priority = newPriority };
+        todoitems.Add(newitem);
+        todoitems.Sort((a, b) => b.Priority.CompareTo(a.Priority));
+        newTitle = string.Empty;
+        newPriority = 1;
+    }
+}

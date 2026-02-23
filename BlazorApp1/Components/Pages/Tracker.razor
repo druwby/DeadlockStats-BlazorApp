@@ -1,0 +1,73 @@
+@page "/tracker"
+@using BlazorApp1.Models
+@using BlazorApp1.Services
+@inject DeadlockService DeadlockApi
+@rendermode InteractiveServer
+
+<h3>Deadlock Belt-To-Ass Tracker</h3>
+
+<div class="mb-3">
+    <input @bind="SteamId" class="form-control" placeholder="Enter Account ID (e.g. 87624911)" />
+    <button class="btn btn-primary mt-2" @onclick="FetchStats" disabled="@IsLoading">
+        @if (IsLoading) { <span>Loading...</span> } else { <span>Fetch Stats</span> }
+    </button>
+</div>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="alert alert-danger">@ErrorMessage</div>
+}
+
+@if (PlayerData != null)
+{
+    <h4>Stats</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Hero</th>
+                <th>Matches</th>
+                <th>Win Rate</th>
+                <th>Time Played</th>
+                <th>Last Played</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var hero in PlayerData.HeroStats.OrderByDescending(h => h.MatchesPlayed))
+            {
+                <tr>
+                    <td>@hero.HeroName</td>
+                    <td>@hero.MatchesPlayed</td>
+                    <td style="color: @(hero.WinRate >= 50 ? "green" : "red")">
+                        @hero.WinRate.ToString("F1")%
+                    </td>
+                    <td>@hero.TimePlayedSpan</td>
+                    <td>@hero.LastPlayedDate</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private string? SteamId;
+    private PlayerHeroSummary? PlayerData;
+    private bool IsLoading = false;
+    private string? ErrorMessage;
+
+    private async Task FetchStats()
+    {
+        if (string.IsNullOrWhiteSpace(SteamId)) return;
+
+        IsLoading = true;
+        ErrorMessage = null;
+        
+        PlayerData = await DeadlockApi.GetPlayerWinRates(SteamId);
+
+        if (PlayerData == null)
+        {
+            ErrorMessage = "Could not find player data. Ensure the ID is correct and profile is public.";
+        }
+
+        IsLoading = false;
+    }
+}
