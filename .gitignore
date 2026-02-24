@@ -12,3 +12,6 @@
 appsettings.Development.json
 .DS_Store
 .vscode/
+!.vscode/launch.json
+!.vscode/tasks.json
+!.vscode/extensions.json
