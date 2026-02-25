@@ -1,0 +1,40 @@
+@page "/steamprofile"
+@using BlazorApp1.Models
+@using BlazorApp1.Services
+@inject DeadlockService DeadlockApi
+@inject SteamService SteamService
+@rendermode InteractiveServer
+
+<div class="input-group mb-3">
+    <input type="text" @bind="searchTerm" class="form-control" placeholder="Enter Steam Name (e.g. gabelogannewell)" />
+    <button class="btn btn-primary" @onclick="SearchPlayer">Search</button>
+</div>
+
+@if (currentPlayer != null)
+{
+    <div class="card" style="width: 10rem;">
+        <img src="@currentPlayer.AvatarUrl" class="card-img-top" alt="Avatar">
+        <div class="card-body">
+            <h5 class="card-title">@currentPlayer.PersonaName</h5>
+            <a href="@currentPlayer.vanityUrl" target="_blank" class="btn btn-secondary">View Steam Profile</a>
+        </div>
+    </div>
+}
+
+@code {
+    private string searchTerm = "";
+    private SteamPlayer? currentPlayer;
+
+    private async Task SearchPlayer()
+    {
+        // Check if it's already an ID (numeric) or a Vanity Name (text)
+        if (long.TryParse(searchTerm, out _))
+        {
+            currentPlayer = await SteamService.GetPlayerSummary(searchTerm);
+        }
+        else
+        {
+            currentPlayer = await SteamService.GetPlayerByVanityUrl(searchTerm);
+        }
+    }
+}
